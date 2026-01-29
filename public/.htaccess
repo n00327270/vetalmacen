@@ -1,0 +1,4 @@
+# Permitir acceso a todos los archivos
+Options -Indexes
+Order Allow,Deny
+Allow from all

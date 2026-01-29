@@ -1,0 +1,30 @@
+# Archivos de configuración sensibles
+.env
+config/database.php
+config/azure_config.php
+config/recaptcha_config.php
+
+# Vendor de Composer
+vendor/
+
+# Archivos temporales
+public/uploads/temp/*
+!public/uploads/temp/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Cache
+cache/
+*.cache

@@ -1,0 +1,7 @@
+# ========================================
+# .htaccess para carpeta helpers
+# Bloquear acceso total
+# ========================================
+
+Order Deny,Allow
+Deny from all

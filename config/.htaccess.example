@@ -1,0 +1,7 @@
+# ========================================
+# .htaccess para carpeta config
+# Bloquear acceso total
+# ========================================
+
+Order Deny,Allow
+Deny from all

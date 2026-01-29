@@ -1,0 +1,83 @@
+<?php
+$pageTitle = 'Editar Proveedor';
+require_once __DIR__ . '/../layouts/header.php';
+require_once __DIR__ . '/../layouts/navbar.php';
+?>
+
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/vetalmacen/public/index.php?url=dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/vetalmacen/public/index.php?url=proveedores">Proveedores</a></li>
+            <li class="breadcrumb-item active">Editar</li>
+        </ol>
+    </nav>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <h2><i class="bi bi-pencil"></i> Editar Proveedor</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="POST" action="/vetalmacen/public/index.php?url=proveedores/actualizar">
+                        <input type="hidden" name="id" value="<?php echo $proveedor['Id']; ?>">
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="razon_social" class="form-label">Razón Social <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="razon_social" name="razon_social" 
+                                       value="<?php echo htmlspecialchars($proveedor['RazonSocial']); ?>" required autofocus>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="ruc" class="form-label">RUC</label>
+                                <input type="text" class="form-control" id="ruc" name="ruc" maxlength="11" pattern="[0-9]{11}"
+                                       value="<?php echo htmlspecialchars($proveedor['RUC']); ?>">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nombre_contacto" class="form-label">Nombre de Contacto</label>
+                            <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto"
+                                   value="<?php echo htmlspecialchars($proveedor['NombreContacto']); ?>">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <textarea class="form-control" id="direccion" name="direccion" rows="2"><?php echo htmlspecialchars($proveedor['Direccion']); ?></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono" name="telefono"
+                                       value="<?php echo htmlspecialchars($proveedor['Telefono']); ?>">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       value="<?php echo htmlspecialchars($proveedor['Email']); ?>">
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Actualizar Proveedor
+                            </button>
+                            <a href="/vetalmacen/public/index.php?url=proveedores" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require_once __DIR__ . '/../layouts/footer.php'; ?>

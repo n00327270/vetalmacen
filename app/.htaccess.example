@@ -1,0 +1,7 @@
+# ========================================
+# .htaccess para carpeta app
+# Bloquear acceso total
+# ========================================
+
+Order Deny,Allow
+Deny from all
