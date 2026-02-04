@@ -1,13 +1,6 @@
 <?php
-/**
- * Helper para Azure Blob Storage
- * Maneja la subida, eliminación y gestión de imágenes en Azure
- * Fecha: 2026-01-23
- * 
- * IMPORTANTE: Como el contenedor está en público, no necesitamos tokens SAS
- */
-
 require_once __DIR__ . '/../config/azure_config.php';
+require_once __DIR__ . '/../app/models/Database.php';
 
 class AzureBlobHelper {
     
@@ -15,6 +8,7 @@ class AzureBlobHelper {
     private $accountKey;
     private $containerName;
     private $blobEndpoint;
+    private static $cachedExpiryMinutes = null;
 
     public function __construct() {
         $this->accountName = AZURE_STORAGE_ACCOUNT_NAME;
@@ -191,5 +185,118 @@ class AzureBlobHelper {
         $random = bin2hex(random_bytes(8));
         
         return "producto_{$timestamp}_{$random}.{$extension}";
+    }
+
+    /**
+     * Obtener minutos de expiración desde mastertable (IdMasterTable = 201)
+     * Se cachea en memoria para no consultar la BD cada vez
+     */
+    private function getExpiryMinutes() {
+        if (self::$cachedExpiryMinutes !== null) {
+            return self::$cachedExpiryMinutes;
+        }
+
+        try {
+            $database = new Database();
+            $conn = $database->getConnection();
+
+            $query = "SELECT Value FROM mastertable WHERE IdMasterTable = 201 AND States = 1";
+            $stmt = $conn->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetch();
+
+            self::$cachedExpiryMinutes = $result ? (int)$result['Value'] : 60;
+        } catch (Exception $e) {
+            error_log("Error al leer expiración de mastertable: " . $e->getMessage());
+            self::$cachedExpiryMinutes = 60; // fallback si falla
+        }
+
+        return self::$cachedExpiryMinutes;
+    }
+
+    /**
+     * Generar URL con SAS Token (Shared Access Signature) para acceso temporal
+     * @param string $blobName - Nombre del blob
+     * @param int $expiryMinutes - Minutos de validez (default: 60)
+     * @return string - URL completa con SAS token
+     */
+    public function generateBlobSASUrl($blobName, $expiryMinutes = null) {
+        if ($expiryMinutes === null) {
+            $expiryMinutes = $this->getExpiryMinutes();
+        }
+        try {
+            // URL base del blob
+            $blobUrl = $this->blobEndpoint . $blobName;
+            
+            // Fecha de inicio y expiración (formato ISO 8601)
+            $start = gmdate('Y-m-d\TH:i:s\Z', time() - 300); // 5 min antes
+            $expiry = gmdate('Y-m-d\TH:i:s\Z', time() + ($expiryMinutes * 60));
+            
+            // Parámetros SAS
+            $signedPermissions = 'r'; // read only
+            $signedStart = $start;
+            $signedExpiry = $expiry;
+            $canonicalizedResource = '/blob/' . $this->accountName . '/' . $this->containerName . '/' . $blobName;
+            $signedIdentifier = '';
+            $signedIP = '';
+            $signedProtocol = 'https';
+            $signedVersion = '2020-10-02';
+            $signedResource = 'b'; // blob
+            $signedSnapshotTime = '';
+            $rscc = ''; // Cache-Control
+            $rscd = ''; // Content-Disposition
+            $rsce = ''; // Content-Encoding
+            $rscl = ''; // Content-Language
+            $rsct = ''; // Content-Type
+            
+            // String to sign para Azure Blob SAS v2
+            // Orden EXACTO según documentación Microsoft:
+            $stringToSign = implode("\n", [
+                $signedPermissions,
+                $signedStart,
+                $signedExpiry,
+                $canonicalizedResource,
+                $signedIdentifier,
+                $signedIP,
+                $signedProtocol,
+                $signedVersion,
+                $signedResource,
+                $signedSnapshotTime,
+                $rscc,
+                $rscd,
+                $rsce,
+                $rscl,
+                $rsct
+            ]);
+            
+            // Generar firma (sin utf8_encode, ya no es necesario en PHP 8+)
+            $signature = base64_encode(
+                hash_hmac('sha256', $stringToSign, base64_decode($this->accountKey), true)
+            );
+            
+            // Construir parámetros SAS
+            $sasParams = [
+                'sp' => $signedPermissions,
+                'st' => $signedStart,
+                'se' => $signedExpiry,
+                'spr' => $signedProtocol,
+                'sv' => $signedVersion,
+                'sr' => $signedResource,
+                'sig' => $signature
+            ];
+            
+            // Construir query string
+            $sasQueryString = http_build_query($sasParams);
+            
+            // URL completa con SAS token
+            return $blobUrl . '?' . $sasQueryString;
+            
+        } catch (Exception $e) {
+            // Log del error
+            error_log('Error generando SAS token: ' . $e->getMessage());
+            
+            // Fallback: retornar URL base (no funcionará en contenedor privado)
+            return $this->blobEndpoint . $blobName;
+        }
     }
 }
