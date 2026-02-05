@@ -1,10 +1,4 @@
 <?php
-/**
- * Modelo StockSucursal
- * Maneja el stock de productos por sucursal
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/Database.php';
 
 class StockSucursal {
@@ -25,8 +19,8 @@ class StockSucursal {
      */
     public function getAll() {
         $query = "SELECT ss.*, 
-                         p.Codigo, p.Nombre as ProductoNombre, p.Marca, p.ImagenUrl,
-                         s.Sede as SucursalNombre,
+                         p.Codigo, p.Nombre as ProductoNombre, p.Marca, p.Precio, p.ImagenUrl, p.BlobName,
+                         s.Sede as SucursalNombre, s.Direccion,
                          sc.Nombre as SubCategoriaNombre,
                          c.Nombre as CategoriaNombre
                   FROM " . $this->table . " ss
@@ -34,6 +28,7 @@ class StockSucursal {
                   INNER JOIN sucursal s ON ss.SucursalId = s.Id
                   INNER JOIN subcategoria sc ON p.SubCategoriaId = sc.Id
                   INNER JOIN categoria c ON sc.CategoriaId = c.Id
+                  WHERE s.Activo = 1
                   ORDER BY s.Sede, p.Nombre ASC";
         
         $stmt = $this->conn->prepare($query);

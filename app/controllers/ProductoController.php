@@ -254,6 +254,13 @@ class ProductoController {
             exit();
         }
 
+        // Generar URL temporal con SAS token si tiene imagen
+        if (!empty($producto['BlobName'])) {
+            require_once __DIR__ . '/../../helpers/AzureBlobHelper.php';
+            $azureHelper = new AzureBlobHelper();
+            $producto['ImagenUrlTemp'] = $azureHelper->generateBlobSASUrl($producto['BlobName']);
+        }
+
         // Obtener stock por sucursal
         $stockModel = new StockSucursal();
         $stockPorSucursal = $stockModel->getByProducto($id);

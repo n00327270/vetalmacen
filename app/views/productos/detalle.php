@@ -35,15 +35,21 @@ require_once __DIR__ . '/../layouts/navbar.php';
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body text-center">
-                    <img src="<?php echo $producto['ImagenUrl'] ?? '/vetalmacen/public/images/placeholder.png'; ?>" 
-                         alt="<?php echo htmlspecialchars($producto['Nombre']); ?>" 
-                         class="img-fluid rounded mb-3"
-                         style="max-height: 300px;">
-                    
-                    <?php if ($producto['ImagenUrl']): ?>
-                    <div class="text-muted small">
-                        <i class="bi bi-cloud-check"></i> Imagen en Azure Blob Storage
-                    </div>
+                    <?php if (!empty($producto['ImagenUrlTemp'])): ?>
+                        <img src="<?php echo $producto['ImagenUrlTemp']; ?>" 
+                             alt="<?php echo htmlspecialchars($producto['Nombre']); ?>" 
+                             class="img-fluid rounded mb-3"
+                             style="max-height: 300px;">
+                        
+                        <div class="text-muted small">
+                            <i class="bi bi-cloud-check"></i> Imagen en Azure Blob Storage
+                            <br><small class="text-warning">URL temporal</small>
+                        </div>
+                    <?php else: ?>
+                        <img src="/vetalmacen/public/images/placeholder.png" 
+                             alt="Sin imagen" 
+                             class="img-fluid rounded mb-3"
+                             style="max-height: 300px;">
                     <?php endif; ?>
                 </div>
             </div>

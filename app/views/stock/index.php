@@ -90,10 +90,15 @@ require_once __DIR__ . '/../layouts/navbar.php';
                             ?>
                             <tr class="<?php echo $stockClass; ?>">
                                 <td>
-                                    <img src="<?php echo $item['ImagenUrl'] ?? '/vetalmacen/public/images/placeholder.png'; ?>" 
-                                         alt="<?php echo htmlspecialchars($item['ProductoNombre']); ?>"
-                                         class="img-thumbnail" 
-                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                    <?php if (!empty($item['BlobName'])): ?>
+                                        <i class="bi bi-image-fill text-success" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Tiene imagen"></i>
+                                    <?php else: ?>
+                                        <i class="bi bi-image text-muted" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Sin imagen"></i>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($item['Codigo']); ?></td>
                                 <td>

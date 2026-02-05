@@ -65,10 +65,15 @@ require_once __DIR__ . '/../layouts/navbar.php';
                             <?php foreach ($productos as $producto): ?>
                             <tr>
                                 <td>
-                                    <img src="<?php echo $producto['ImagenUrl'] ?? '/vetalmacen/public/images/placeholder.png'; ?>" 
-                                         alt="<?php echo htmlspecialchars($producto['Nombre']); ?>"
-                                         class="img-thumbnail"
-                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                    <?php if (!empty($producto['BlobName'])): ?>
+                                        <i class="bi bi-image-fill text-success" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Tiene imagen"></i>
+                                    <?php else: ?>
+                                        <i class="bi bi-image text-muted" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Sin imagen"></i>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($producto['Codigo']); ?></td>
                                 <td>
