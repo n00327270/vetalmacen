@@ -25,9 +25,21 @@ require_once __DIR__ . '/../layouts/navbar.php';
                 <div class="card-body">
                     <form method="POST" action="/vetalmacen/public/index.php?url=proveedores/guardar" id="formProveedor">
                         <div class="row">
-                            <div class="col-md-8 mb-3">
+                            <div class="col-md-5 mb-3">
                                 <label for="razon_social" class="form-label">Razón Social <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="razon_social" name="razon_social" required autofocus>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="denominacion_id" class="form-label">Denominación <span class="text-danger">*</span></label>
+                                <select class="form-select" id="denominacion_id" name="denominacion_id" required>
+                                    <option value="">Seleccione</option>
+                                    <?php foreach ($denominaciones as $denom): ?>
+                                    <option value="<?php echo $denom['IdMasterTable']; ?>">
+                                        <?php echo htmlspecialchars($denom['Value']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             
                             <div class="col-md-4 mb-3">
@@ -81,6 +93,9 @@ require_once __DIR__ . '/../layouts/navbar.php';
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <i class="bi bi-check-circle text-success"></i> La razón social es obligatoria
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i> La denominación es obligatoria
                         </li>
                         <li class="mb-2">
                             <i class="bi bi-check-circle text-success"></i> El RUC debe tener 11 dígitos

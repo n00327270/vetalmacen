@@ -1,27 +1,19 @@
 <?php
-/**
- * Modelo Producto
- * Maneja productos con integración de Azure Blob Storage para imágenes
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/Database.php';
-require_once __DIR__ . '/../../helpers/AzureBlobHelper.php';
-require_once __DIR__ . '/../../helpers/ImageHelper.php';
 
-class Producto {
+class Proveedor {
     private $conn;
-    private $table = 'producto';
+    private $table = 'proveedor';
 
     public $Id;
-    public $Codigo;
-    public $Nombre;
-    public $Descripcion;
-    public $Marca;
-    public $SubCategoriaId;
-    public $Precio;
-    public $ImagenUrl;
-    public $BlobName;
+    public $RazonSocial;
+    public $DenominacionId;
+    public $RUC;
+    public $NombreContacto;
+    public $Direccion;
+    public $Telefono;
+    public $Email;
+    public $CreatedAt;
 
     public function __construct() {
         $database = new Database();
@@ -29,36 +21,26 @@ class Producto {
     }
 
     /**
-     * Obtener todos los productos con información completa
+     * Obtener todos los proveedores (con nombre de denominación)
      */
     public function getAll() {
-        $query = "SELECT p.*, 
-                         sc.Nombre as SubCategoriaNombre,
-                         c.Nombre as CategoriaNombre,
-                         c.Id as CategoriaId
-                  FROM " . $this->table . " p
-                  INNER JOIN subcategoria sc ON p.SubCategoriaId = sc.Id
-                  INNER JOIN categoria c ON sc.CategoriaId = c.Id
-                  ORDER BY p.Nombre ASC";
-        
+        $query = "SELECT prov.*, mt.Value AS DenominacionValor
+                  FROM " . $this->table . " prov
+                  LEFT JOIN mastertable mt ON prov.DenominacionId = mt.IdMasterTable
+                  ORDER BY prov.RazonSocial ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     /**
-     * Obtener producto por ID
+     * Obtener proveedor por ID (con nombre de denominación)
      */
     public function getById($id) {
-        $query = "SELECT p.*, 
-                         sc.Nombre as SubCategoriaNombre,
-                         c.Nombre as CategoriaNombre,
-                         c.Id as CategoriaId
-                  FROM " . $this->table . " p
-                  INNER JOIN subcategoria sc ON p.SubCategoriaId = sc.Id
-                  INNER JOIN categoria c ON sc.CategoriaId = c.Id
-                  WHERE p.Id = :id";
-        
+        $query = "SELECT prov.*, mt.Value AS DenominacionValor
+                  FROM " . $this->table . " prov
+                  LEFT JOIN mastertable mt ON prov.DenominacionId = mt.IdMasterTable
+                  WHERE prov.Id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -66,31 +48,16 @@ class Producto {
     }
 
     /**
-     * Obtener producto por código
-     */
-    public function getByCodigo($codigo) {
-        $query = "SELECT * FROM " . $this->table . " WHERE Codigo = :codigo";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':codigo', $codigo);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * Buscar productos
+     * Buscar proveedores
      */
     public function search($searchTerm) {
-        $query = "SELECT p.*, 
-                         sc.Nombre as SubCategoriaNombre,
-                         c.Nombre as CategoriaNombre
-                  FROM " . $this->table . " p
-                  INNER JOIN subcategoria sc ON p.SubCategoriaId = sc.Id
-                  INNER JOIN categoria c ON sc.CategoriaId = c.Id
-                  WHERE p.Nombre LIKE :search 
-                     OR p.Codigo LIKE :search 
-                     OR p.Marca LIKE :search
-                     OR p.Descripcion LIKE :search
-                  ORDER BY p.Nombre ASC";
+        $query = "SELECT prov.*, mt.Value AS DenominacionValor
+                  FROM " . $this->table . " prov
+                  LEFT JOIN mastertable mt ON prov.DenominacionId = mt.IdMasterTable
+                  WHERE prov.RazonSocial LIKE :search 
+                     OR prov.RUC LIKE :search 
+                     OR prov.NombreContacto LIKE :search
+                  ORDER BY prov.RazonSocial ASC";
         
         $stmt = $this->conn->prepare($query);
         $searchParam = "%{$searchTerm}%";
@@ -100,221 +67,90 @@ class Producto {
     }
 
     /**
-     * Crear nuevo producto con imagen
-     * @param array $imageFile - Archivo de imagen de $_FILES (opcional)
+     * Crear nuevo proveedor
      */
-    public function create($imageFile = null) {
-        // Procesar imagen si existe
-        $imagenUrl = null;
-        $blobName = null;
-
-        if ($imageFile && $imageFile['error'] !== UPLOAD_ERR_NO_FILE) {
-            // Validar imagen
-            $validation = ImageHelper::validateImage($imageFile);
-            if (!$validation['valid']) {
-                return [
-                    'success' => false,
-                    'error' => $validation['error']
-                ];
-            }
-
-            // Optimizar imagen
-            ImageHelper::optimizeImage($imageFile['tmp_name']);
-
-            // Subir a Azure
-            $azureHelper = new AzureBlobHelper();
-            $blobName = $azureHelper->generateUniqueBlobName($imageFile['name']);
-            $uploadResult = $azureHelper->uploadImage($imageFile['tmp_name'], $blobName);
-
-            if (!$uploadResult['success']) {
-                return [
-                    'success' => false,
-                    'error' => 'Error al subir imagen: ' . $uploadResult['error']
-                ];
-            }
-
-            $imagenUrl = $uploadResult['url'];
-        }
-
-        // Insertar producto en BD
+    public function create() {
         $query = "INSERT INTO " . $this->table . " 
-                  (Codigo, Nombre, Descripcion, Marca, SubCategoriaId, Precio, ImagenUrl, BlobName) 
-                  VALUES (:codigo, :nombre, :descripcion, :marca, :subcategoria_id, :precio, :imagen_url, :blob_name)";
+                  (RazonSocial, DenominacionId, RUC, NombreContacto, Direccion, Telefono, Email) 
+                  VALUES (:razon_social, :denominacion_id, :ruc, :nombre_contacto, :direccion, :telefono, :email)";
         
         $stmt = $this->conn->prepare($query);
         
-        $this->Codigo = htmlspecialchars(strip_tags($this->Codigo));
-        $this->Nombre = htmlspecialchars(strip_tags($this->Nombre));
-        $this->Descripcion = htmlspecialchars(strip_tags($this->Descripcion));
-        $this->Marca = htmlspecialchars(strip_tags($this->Marca));
+        $this->RazonSocial = htmlspecialchars(strip_tags($this->RazonSocial));
+        $this->RUC = htmlspecialchars(strip_tags($this->RUC));
+        $this->NombreContacto = htmlspecialchars(strip_tags($this->NombreContacto));
+        $this->Direccion = htmlspecialchars(strip_tags($this->Direccion));
+        $this->Telefono = htmlspecialchars(strip_tags($this->Telefono));
+        $this->Email = htmlspecialchars(strip_tags($this->Email));
         
-        $stmt->bindParam(':codigo', $this->Codigo);
-        $stmt->bindParam(':nombre', $this->Nombre);
-        $stmt->bindParam(':descripcion', $this->Descripcion);
-        $stmt->bindParam(':marca', $this->Marca);
-        $stmt->bindParam(':subcategoria_id', $this->SubCategoriaId);
-        $stmt->bindParam(':precio', $this->Precio);
-        $stmt->bindParam(':imagen_url', $imagenUrl);
-        $stmt->bindParam(':blob_name', $blobName);
+        $stmt->bindParam(':razon_social', $this->RazonSocial);
+        $stmt->bindParam(':denominacion_id', $this->DenominacionId, PDO::PARAM_INT);
+        $stmt->bindParam(':ruc', $this->RUC);
+        $stmt->bindParam(':nombre_contacto', $this->NombreContacto);
+        $stmt->bindParam(':direccion', $this->Direccion);
+        $stmt->bindParam(':telefono', $this->Telefono);
+        $stmt->bindParam(':email', $this->Email);
         
-        if ($stmt->execute()) {
-            return [
-                'success' => true,
-                'id' => $this->conn->lastInsertId()
-            ];
-        } else {
-            // Si falla la inserción y se subió imagen, eliminarla de Azure
-            if ($blobName) {
-                $azureHelper->deleteImage($blobName);
-            }
-            return [
-                'success' => false,
-                'error' => 'Error al crear el producto en la base de datos'
-            ];
-        }
+        return $stmt->execute();
     }
 
     /**
-     * Actualizar producto con posibilidad de cambiar imagen
+     * Actualizar proveedor
      */
-    public function update($imageFile = null) {
-        $oldProduct = $this->getById($this->Id);
-        
-        if (!$oldProduct) {
-            return [
-                'success' => false,
-                'error' => 'Producto no encontrado'
-            ];
-        }
-
-        $imagenUrl = $oldProduct['ImagenUrl'];
-        $blobName = $oldProduct['BlobName'];
-        $oldBlobName = $oldProduct['BlobName'];
-
-        // Si hay nueva imagen
-        if ($imageFile && $imageFile['error'] !== UPLOAD_ERR_NO_FILE) {
-            // Validar nueva imagen
-            $validation = ImageHelper::validateImage($imageFile);
-            if (!$validation['valid']) {
-                return [
-                    'success' => false,
-                    'error' => $validation['error']
-                ];
-            }
-
-            // Optimizar imagen
-            ImageHelper::optimizeImage($imageFile['tmp_name']);
-
-            // Subir nueva imagen a Azure
-            $azureHelper = new AzureBlobHelper();
-            $blobName = $azureHelper->generateUniqueBlobName($imageFile['name']);
-            $uploadResult = $azureHelper->uploadImage($imageFile['tmp_name'], $blobName);
-
-            if (!$uploadResult['success']) {
-                return [
-                    'success' => false,
-                    'error' => 'Error al subir nueva imagen: ' . $uploadResult['error']
-                ];
-            }
-
-            $imagenUrl = $uploadResult['url'];
-        }
-
-        // Actualizar en BD
+    public function update() {
         $query = "UPDATE " . $this->table . " 
-                  SET Codigo = :codigo,
-                      Nombre = :nombre,
-                      Descripcion = :descripcion,
-                      Marca = :marca,
-                      SubCategoriaId = :subcategoria_id,
-                      Precio = :precio,
-                      ImagenUrl = :imagen_url,
-                      BlobName = :blob_name
+                  SET RazonSocial = :razon_social,
+                      DenominacionId = :denominacion_id,
+                      RUC = :ruc,
+                      NombreContacto = :nombre_contacto,
+                      Direccion = :direccion,
+                      Telefono = :telefono,
+                      Email = :email
                   WHERE Id = :id";
         
         $stmt = $this->conn->prepare($query);
         
-        $this->Codigo = htmlspecialchars(strip_tags($this->Codigo));
-        $this->Nombre = htmlspecialchars(strip_tags($this->Nombre));
-        $this->Descripcion = htmlspecialchars(strip_tags($this->Descripcion));
-        $this->Marca = htmlspecialchars(strip_tags($this->Marca));
+        $this->RazonSocial = htmlspecialchars(strip_tags($this->RazonSocial));
+        $this->RUC = htmlspecialchars(strip_tags($this->RUC));
+        $this->NombreContacto = htmlspecialchars(strip_tags($this->NombreContacto));
+        $this->Direccion = htmlspecialchars(strip_tags($this->Direccion));
+        $this->Telefono = htmlspecialchars(strip_tags($this->Telefono));
+        $this->Email = htmlspecialchars(strip_tags($this->Email));
         
-        $stmt->bindParam(':codigo', $this->Codigo);
-        $stmt->bindParam(':nombre', $this->Nombre);
-        $stmt->bindParam(':descripcion', $this->Descripcion);
-        $stmt->bindParam(':marca', $this->Marca);
-        $stmt->bindParam(':subcategoria_id', $this->SubCategoriaId);
-        $stmt->bindParam(':precio', $this->Precio);
-        $stmt->bindParam(':imagen_url', $imagenUrl);
-        $stmt->bindParam(':blob_name', $blobName);
+        $stmt->bindParam(':razon_social', $this->RazonSocial);
+        $stmt->bindParam(':denominacion_id', $this->DenominacionId, PDO::PARAM_INT);
+        $stmt->bindParam(':ruc', $this->RUC);
+        $stmt->bindParam(':nombre_contacto', $this->NombreContacto);
+        $stmt->bindParam(':direccion', $this->Direccion);
+        $stmt->bindParam(':telefono', $this->Telefono);
+        $stmt->bindParam(':email', $this->Email);
         $stmt->bindParam(':id', $this->Id);
         
-        if ($stmt->execute()) {
-            // Si se actualizó correctamente y había una imagen antigua diferente, eliminarla de Azure
-            if ($oldBlobName && $blobName !== $oldBlobName && $imageFile && $imageFile['error'] !== UPLOAD_ERR_NO_FILE) {
-                $azureHelper = new AzureBlobHelper();
-                $azureHelper->deleteImage($oldBlobName);
-            }
-            
-            return ['success' => true];
-        } else {
-            // Si falla la actualización y se subió nueva imagen, eliminarla
-            if ($imageFile && $imageFile['error'] !== UPLOAD_ERR_NO_FILE && $blobName !== $oldBlobName) {
-                $azureHelper = new AzureBlobHelper();
-                $azureHelper->deleteImage($blobName);
-            }
-            return [
-                'success' => false,
-                'error' => 'Error al actualizar el producto'
-            ];
-        }
+        return $stmt->execute();
     }
 
     /**
-     * Eliminar producto y su imagen de Azure
+     * Eliminar proveedor
      */
     public function delete() {
-        $product = $this->getById($this->Id);
-        
-        if (!$product) {
-            return [
-                'success' => false,
-                'error' => 'Producto no encontrado'
-            ];
-        }
-
-        // Eliminar de BD
         $query = "DELETE FROM " . $this->table . " WHERE Id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->Id);
-        
-        if ($stmt->execute()) {
-            // Eliminar imagen de Azure si existe
-            if ($product['BlobName']) {
-                $azureHelper = new AzureBlobHelper();
-                $azureHelper->deleteImage($product['BlobName']);
-            }
-            return ['success' => true];
-        } else {
-            return [
-                'success' => false,
-                'error' => 'Error al eliminar el producto'
-            ];
-        }
+        return $stmt->execute();
     }
 
     /**
-     * Verificar si código ya existe
+     * Verificar si RUC ya existe
      */
-    public function codigoExists($codigo, $excludeId = null) {
-        $query = "SELECT COUNT(*) as count FROM " . $this->table . " WHERE Codigo = :codigo";
+    public function rucExists($ruc, $excludeId = null) {
+        $query = "SELECT COUNT(*) as count FROM " . $this->table . " WHERE RUC = :ruc";
         
         if ($excludeId) {
             $query .= " AND Id != :id";
         }
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':codigo', $codigo);
+        $stmt->bindParam(':ruc', $ruc);
         
         if ($excludeId) {
             $stmt->bindParam(':id', $excludeId);
@@ -324,5 +160,18 @@ class Producto {
         $result = $stmt->fetch();
         
         return $result['count'] > 0;
+    }
+
+    /**
+     * Obtener denominaciones disponibles (de mastertable, padre = 100)
+     */
+    public function getDenominaciones() {
+        $query = "SELECT IdMasterTable, Value, Name 
+                  FROM mastertable 
+                  WHERE IdMasterTableParent = 100 AND States = 1
+                  ORDER BY `Order` ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 }

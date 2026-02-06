@@ -35,6 +35,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body text-center">
+                    <!-- validacion general del front para la url temporal donde te sale si tiene imagen (if) o no(else) (para no sobrecargar la bd) -->
                     <?php if (!empty($producto['ImagenUrlTemp'])): ?>
                         <img src="<?php echo $producto['ImagenUrlTemp']; ?>" 
                              alt="<?php echo htmlspecialchars($producto['Nombre']); ?>" 

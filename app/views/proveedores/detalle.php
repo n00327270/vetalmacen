@@ -42,6 +42,10 @@ require_once __DIR__ . '/../layouts/navbar.php';
                             <td><strong><?php echo htmlspecialchars($proveedor['RazonSocial']); ?></strong></td>
                         </tr>
                         <tr>
+                            <th>Denominación:</th>
+                            <td><?php echo htmlspecialchars($proveedor['DenominacionValor']); ?></td>
+                        </tr>
+                        <tr>
                             <th>RUC:</th>
                             <td><?php echo htmlspecialchars($proveedor['RUC']); ?></td>
                         </tr>

@@ -204,7 +204,9 @@ class AzureBlobHelper {
             $stmt = $conn->prepare($query);
             $stmt->execute();
             $result = $stmt->fetch();
-
+            
+            /**PROTOCOLO PARA QUE SI NO AGARRA NINGUN LINK TEMPORAL EN 60 MINUTOS TOME UNA IMAGEN LOCAL DEL AZURE
+             */
             self::$cachedExpiryMinutes = $result ? (int)$result['Value'] : 60;
         } catch (Exception $e) {
             error_log("Error al leer expiración de mastertable: " . $e->getMessage());
@@ -233,14 +235,14 @@ class AzureBlobHelper {
             $expiry = gmdate('Y-m-d\TH:i:s\Z', time() + ($expiryMinutes * 60));
             
             // Parámetros SAS
-            $signedPermissions = 'r'; // read only
+            $signedPermissions = 'r'; // read only (solo lectura)
             $signedStart = $start;
-            $signedExpiry = $expiry;
+            $signedExpiry = $expiry; // condicional de expiracion del enlace, luego de esa hora el acceso es denegado y se aplica la otra regla
             $canonicalizedResource = '/blob/' . $this->accountName . '/' . $this->containerName . '/' . $blobName;
-            $signedIdentifier = '';
-            $signedIP = '';
-            $signedProtocol = 'https';
-            $signedVersion = '2020-10-02';
+            $signedIdentifier = ''; // '' al dejar eso vacio se ejecuta el sas directo, sin depender de las politicas
+            $signedIP = ''; // al dejar vacio puede ser cualquier IP
+            $signedProtocol = 'https'; //solo urls seguras
+            $signedVersion = '2020-10-02'; //version del API del azure mas usada
             $signedResource = 'b'; // blob
             $signedSnapshotTime = '';
             $rscc = ''; // Cache-Control

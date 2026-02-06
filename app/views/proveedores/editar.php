@@ -27,16 +27,30 @@ require_once __DIR__ . '/../layouts/navbar.php';
                         <input type="hidden" name="id" value="<?php echo $proveedor['Id']; ?>">
                         
                         <div class="row">
-                            <div class="col-md-8 mb-3">
+                            <div class="col-md-5 mb-3">
                                 <label for="razon_social" class="form-label">Razón Social <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="razon_social" name="razon_social" 
                                        value="<?php echo htmlspecialchars($proveedor['RazonSocial']); ?>" required autofocus>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="denominacion_id" class="form-label">Denominación <span class="text-danger">*</span></label>
+                                <select class="form-select" id="denominacion_id" name="denominacion_id" required>
+                                    <option value="">Seleccione</option>
+                                    <?php foreach ($denominaciones as $denom): ?>
+                                    <option value="<?php echo $denom['IdMasterTable']; ?>" 
+                                            <?php echo ($proveedor['DenominacionId'] == $denom['IdMasterTable']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($denom['Value']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             
                             <div class="col-md-4 mb-3">
                                 <label for="ruc" class="form-label">RUC</label>
                                 <input type="text" class="form-control" id="ruc" name="ruc" maxlength="11" pattern="[0-9]{11}"
                                        value="<?php echo htmlspecialchars($proveedor['RUC']); ?>">
+                                <div class="form-text">11 dígitos</div>
                             </div>
                         </div>
 

@@ -43,6 +43,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                     <thead class="table-light">
                         <tr>
                             <th>Razón Social</th>
+                            <th></th>
                             <th>RUC</th>
                             <th>Contacto</th>
                             <th>Teléfono</th>
@@ -53,7 +54,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                     <tbody>
                         <?php if (empty($proveedores)): ?>
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">
+                            <td colspan="7" class="text-center py-4 text-muted">
                                 <i class="bi bi-inbox" style="font-size: 3rem;"></i>
                                 <p class="mt-2">No hay proveedores registrados</p>
                             </td>
@@ -62,6 +63,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                             <?php foreach ($proveedores as $proveedor): ?>
                             <tr>
                                 <td><strong><?php echo htmlspecialchars($proveedor['RazonSocial']); ?></strong></td>
+                                <td><small class="text-muted"><?php echo htmlspecialchars($proveedor['DenominacionValor']); ?></small></td>
                                 <td><?php echo htmlspecialchars($proveedor['RUC']); ?></td>
                                 <td><?php echo htmlspecialchars($proveedor['NombreContacto']); ?></td>
                                 <td><?php echo htmlspecialchars($proveedor['Telefono']); ?></td>

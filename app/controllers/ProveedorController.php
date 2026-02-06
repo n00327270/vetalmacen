@@ -24,6 +24,9 @@ class ProveedorController {
     public function crear() {
         AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
         
+        $proveedorModel = new Proveedor();
+        $denominaciones = $proveedorModel->getDenominaciones();
+        
         require_once __DIR__ . '/../views/proveedores/crear.php';
     }
 
@@ -40,6 +43,7 @@ class ProveedorController {
 
         $razonSocial = $_POST['razon_social'] ?? '';
         $ruc = $_POST['ruc'] ?? '';
+        $denominacionId = $_POST['denominacion_id'] ?? '';
         $nombreContacto = $_POST['nombre_contacto'] ?? '';
         $direccion = $_POST['direccion'] ?? '';
         $telefono = $_POST['telefono'] ?? '';
@@ -50,6 +54,10 @@ class ProveedorController {
 
         if (!ValidationHelper::required($razonSocial)) {
             $errores[] = 'La razón social es obligatoria';
+        }
+
+        if (!ValidationHelper::positiveInteger($denominacionId)) {
+            $errores[] = 'Debe seleccionar una denominación';
         }
 
         if (!empty($ruc) && !ValidationHelper::ruc($ruc)) {
@@ -75,6 +83,7 @@ class ProveedorController {
         }
 
         $proveedorModel->RazonSocial = $razonSocial;
+        $proveedorModel->DenominacionId = $denominacionId;
         $proveedorModel->RUC = $ruc;
         $proveedorModel->NombreContacto = $nombreContacto;
         $proveedorModel->Direccion = $direccion;
@@ -105,6 +114,8 @@ class ProveedorController {
             header('Location: /vetalmacen/public/index.php?url=proveedores');
             exit();
         }
+
+        $denominaciones = $proveedorModel->getDenominaciones();
         
         require_once __DIR__ . '/../views/proveedores/editar.php';
     }
@@ -122,6 +133,7 @@ class ProveedorController {
 
         $id = $_POST['id'] ?? '';
         $razonSocial = $_POST['razon_social'] ?? '';
+        $denominacionId = $_POST['denominacion_id'] ?? '';
         $ruc = $_POST['ruc'] ?? '';
         $nombreContacto = $_POST['nombre_contacto'] ?? '';
         $direccion = $_POST['direccion'] ?? '';
@@ -137,6 +149,10 @@ class ProveedorController {
 
         if (!ValidationHelper::required($razonSocial)) {
             $errores[] = 'La razón social es obligatoria';
+        }
+
+        if (!ValidationHelper::positiveInteger($denominacionId)) {
+            $errores[] = 'Debe seleccionar una denominación';
         }
 
         if (!empty($ruc) && !ValidationHelper::ruc($ruc)) {
@@ -163,6 +179,7 @@ class ProveedorController {
 
         $proveedorModel->Id = $id;
         $proveedorModel->RazonSocial = $razonSocial;
+        $proveedorModel->DenominacionId = $denominacionId;
         $proveedorModel->RUC = $ruc;
         $proveedorModel->NombreContacto = $nombreContacto;
         $proveedorModel->Direccion = $direccion;
