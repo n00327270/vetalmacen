@@ -7,6 +7,7 @@ class Proveedor {
 
     public $Id;
     public $RazonSocial;
+    public $DenominacionId;
     public $RUC;
     public $NombreContacto;
     public $Direccion;
@@ -20,20 +21,26 @@ class Proveedor {
     }
 
     /**
-     * Obtener todos los proveedores
+     * Obtener todos los proveedores (con nombre de denominación)
      */
     public function getAll() {
-        $query = "SELECT * FROM " . $this->table . " ORDER BY RazonSocial ASC";
+        $query = "SELECT prov.*, mt.Value AS DenominacionValor
+                  FROM " . $this->table . " prov
+                  LEFT JOIN mastertable mt ON prov.DenominacionId = mt.IdMasterTable
+                  ORDER BY prov.RazonSocial ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     /**
-     * Obtener proveedor por ID
+     * Obtener proveedor por ID (con nombre de denominación)
      */
     public function getById($id) {
-        $query = "SELECT * FROM " . $this->table . " WHERE Id = :id";
+        $query = "SELECT prov.*, mt.Value AS DenominacionValor
+                  FROM " . $this->table . " prov
+                  LEFT JOIN mastertable mt ON prov.DenominacionId = mt.IdMasterTable
+                  WHERE prov.Id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -44,11 +51,13 @@ class Proveedor {
      * Buscar proveedores
      */
     public function search($searchTerm) {
-        $query = "SELECT * FROM " . $this->table . " 
-                  WHERE RazonSocial LIKE :search 
-                     OR RUC LIKE :search 
-                     OR NombreContacto LIKE :search
-                  ORDER BY RazonSocial ASC";
+        $query = "SELECT prov.*, mt.Value AS DenominacionValor
+                  FROM " . $this->table . " prov
+                  LEFT JOIN mastertable mt ON prov.DenominacionId = mt.IdMasterTable
+                  WHERE prov.RazonSocial LIKE :search 
+                     OR prov.RUC LIKE :search 
+                     OR prov.NombreContacto LIKE :search
+                  ORDER BY prov.RazonSocial ASC";
         
         $stmt = $this->conn->prepare($query);
         $searchParam = "%{$searchTerm}%";
@@ -62,8 +71,8 @@ class Proveedor {
      */
     public function create() {
         $query = "INSERT INTO " . $this->table . " 
-                  (RazonSocial, RUC, NombreContacto, Direccion, Telefono, Email) 
-                  VALUES (:razon_social, :ruc, :nombre_contacto, :direccion, :telefono, :email)";
+                  (RazonSocial, DenominacionId, RUC, NombreContacto, Direccion, Telefono, Email) 
+                  VALUES (:razon_social, :denominacion_id, :ruc, :nombre_contacto, :direccion, :telefono, :email)";
         
         $stmt = $this->conn->prepare($query);
         
@@ -75,6 +84,7 @@ class Proveedor {
         $this->Email = htmlspecialchars(strip_tags($this->Email));
         
         $stmt->bindParam(':razon_social', $this->RazonSocial);
+        $stmt->bindParam(':denominacion_id', $this->DenominacionId, PDO::PARAM_INT);
         $stmt->bindParam(':ruc', $this->RUC);
         $stmt->bindParam(':nombre_contacto', $this->NombreContacto);
         $stmt->bindParam(':direccion', $this->Direccion);
@@ -90,6 +100,7 @@ class Proveedor {
     public function update() {
         $query = "UPDATE " . $this->table . " 
                   SET RazonSocial = :razon_social,
+                      DenominacionId = :denominacion_id,
                       RUC = :ruc,
                       NombreContacto = :nombre_contacto,
                       Direccion = :direccion,
@@ -107,6 +118,7 @@ class Proveedor {
         $this->Email = htmlspecialchars(strip_tags($this->Email));
         
         $stmt->bindParam(':razon_social', $this->RazonSocial);
+        $stmt->bindParam(':denominacion_id', $this->DenominacionId, PDO::PARAM_INT);
         $stmt->bindParam(':ruc', $this->RUC);
         $stmt->bindParam(':nombre_contacto', $this->NombreContacto);
         $stmt->bindParam(':direccion', $this->Direccion);
@@ -148,5 +160,18 @@ class Proveedor {
         $result = $stmt->fetch();
         
         return $result['count'] > 0;
+    }
+
+    /**
+     * Obtener denominaciones disponibles (de mastertable, padre = 100)
+     */
+    public function getDenominaciones() {
+        $query = "SELECT IdMasterTable, Value, Name 
+                  FROM mastertable 
+                  WHERE IdMasterTableParent = 100 AND States = 1
+                  ORDER BY `Order` ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 }
