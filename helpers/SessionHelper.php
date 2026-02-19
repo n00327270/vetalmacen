@@ -78,7 +78,8 @@ class SessionHelper {
             'username' => self::get('usuario_username'),
             'rol_id' => self::get('usuario_rol_id'),
             'rol_nombre' => self::get('usuario_rol_nombre'),
-            'sucursal_id' => self::get('usuario_sucursal_id')
+            'sucursal_id' => self::get('usuario_sucursal_id'),
+            'es_super' => self::get('usuario_es_super', 0)
         ];
     }
 
@@ -91,6 +92,7 @@ class SessionHelper {
         self::set('usuario_rol_id', $usuario['RolId']);
         self::set('usuario_rol_nombre', $usuario['RolNombre'] ?? '');
         self::set('usuario_sucursal_id', $usuario['SucursalId'] ?? null);
+        self::set('usuario_es_super', $usuario['EsSuperUsuario'] ?? 0);
     }
 
     /**
