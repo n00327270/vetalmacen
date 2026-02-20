@@ -34,6 +34,10 @@ $map = [
     'subcategorias' => 'Subcategoria',
     'ordenes_entrada' => 'OrdenEntrada',
     'ordenes_salida' => 'OrdenSalida',
+    'mastertable' => 'MasterTable',
+    'acceso-denegado' => 'AccesoDenegado',
+    'modulos' => 'Modulo',
+    'permisos' => 'Permiso',
 ];
 
 $controllerBase = $map[$url[0]] ?? ucfirst($url[0]);
