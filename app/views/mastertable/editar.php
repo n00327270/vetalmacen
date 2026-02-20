@@ -34,7 +34,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 <i class="bi bi-file-earmark"></i> Registro Hijo de 
                                 "<strong><?php echo htmlspecialchars($registro['ParentName']); ?></strong>"
                             <?php else: ?>
-                                <i class="bi bi-folder"></i> CatÃ¡logo Padre
+                                <i class="bi bi-folder"></i> Catálogo Padre
                             <?php endif; ?>
                         </div>
 
@@ -62,7 +62,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label">DescripciÃ³n</label>
+                            <label for="description" class="form-label">Descripción</label>
                             <textarea class="form-control" 
                                       id="description" 
                                       name="description" 
@@ -141,19 +141,19 @@ require_once __DIR__ . '/../layouts/navbar.php';
             </div>
         </div>
 
-        <!-- Panel de auditorÃ­a -->
+        <!-- Panel de auditorí­a -->
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-clock-history text-primary"></i> AuditorÃ­a</h5>
+                    <h5 class="card-title"><i class="bi bi-clock-history text-primary"></i> Auditorí­a</h5>
                     
-                    <h6 class="mt-3">CreaciÃ³n</h6>
+                    <h6 class="mt-3">Creación</h6>
                     <p class="small mb-0">
                         <strong>Usuario:</strong> <?php echo htmlspecialchars($registro['UserNew']); ?><br>
                         <strong>Fecha:</strong> <?php echo date('d/m/Y H:i', strtotime($registro['DateNew'])); ?>
                     </p>
 
-                    <h6 class="mt-3">Ãšltima EdiciÃ³n</h6>
+                    <h6 class="mt-3">Última Edición</h6>
                     <?php if ($registro['UserEdit']): ?>
                     <p class="small mb-0">
                         <strong>Usuario:</strong> <?php echo htmlspecialchars($registro['UserEdit']); ?><br>
@@ -170,9 +170,9 @@ require_once __DIR__ . '/../layouts/navbar.php';
                 <div class="card-body">
                     <h6 class="card-title"><i class="bi bi-exclamation-triangle text-warning"></i> Advertencia</h6>
                     <p class="small mb-0">
-                        Este es un catÃ¡logo padre. Si lo desactivas, 
-                        sus registros hijos seguirÃ¡n visibles pero el catÃ¡logo 
-                        no aparecerÃ¡ en listados.
+                        Este es un catálogo padre. Si lo desactivas, 
+                        sus registros hijos seguirán visibles pero el catálogo 
+                        no aparecerá en listados.
                     </p>
                 </div>
             </div>

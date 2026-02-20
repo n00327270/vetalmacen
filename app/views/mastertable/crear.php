@@ -33,7 +33,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                        value="padre" <?php echo empty($parentIdPreselect) ? 'checked' : ''; ?>
                                        onchange="toggleParentSelect()">
                                 <label class="form-check-label" for="tipoPadre">
-                                    <i class="bi bi-folder"></i> CatÃ¡logo Padre (sin padre)
+                                    <i class="bi bi-folder"></i> Catálogo Padre (sin padre)
                                 </label>
                             </div>
                             <div class="form-check">
@@ -41,7 +41,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                        value="hijo" <?php echo !empty($parentIdPreselect) ? 'checked' : ''; ?>
                                        onchange="toggleParentSelect()">
                                 <label class="form-check-label" for="tipoHijo">
-                                    <i class="bi bi-file-earmark"></i> Registro Hijo (pertenece a un catÃ¡logo)
+                                    <i class="bi bi-file-earmark"></i> Registro Hijo (pertenece a un catálogo)
                                 </label>
                             </div>
                         </div>
@@ -49,10 +49,10 @@ require_once __DIR__ . '/../layouts/navbar.php';
                         <!-- Select padre (solo si es hijo) -->
                         <div class="mb-3" id="parentSelectContainer" style="display: <?php echo !empty($parentIdPreselect) ? 'block' : 'none'; ?>;">
                             <label for="parent_id" class="form-label">
-                                CatÃ¡logo Padre <span class="text-danger">*</span>
+                                Catálogo Padre <span class="text-danger">*</span>
                             </label>
                             <select class="form-select" id="parent_id" name="parent_id">
-                                <option value="">Seleccione un catÃ¡logo padre</option>
+                                <option value="">Seleccione un catálogo padre</option>
                                 <?php foreach ($padres as $p): ?>
                                 <option value="<?php echo $p['IdMasterTable']; ?>"
                                         <?php echo (isset($parentIdPreselect) && $parentIdPreselect == $p['IdMasterTable']) ? 'selected' : ''; ?>>
@@ -73,7 +73,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                    name="name" 
                                    required 
                                    autofocus
-                                   placeholder="Ej: Sociedad AnÃ³nima Cerrada">
+                                   placeholder="Ej: Sociedad Anónima Cerrada">
                             <div class="form-text">Nombre descriptivo del registro</div>
                         </div>
 
@@ -88,12 +88,12 @@ require_once __DIR__ . '/../layouts/navbar.php';
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label">DescripciÃ³n</label>
+                            <label for="description" class="form-label">Descripción</label>
                             <textarea class="form-control" 
                                       id="description" 
                                       name="description" 
                                       rows="3"
-                                      placeholder="DescripciÃ³n detallada..."></textarea>
+                                      placeholder="Descripción detallada..."></textarea>
                         </div>
 
                         <div class="mb-3">
@@ -104,7 +104,7 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                    name="order" 
                                    value="0"
                                    min="0">
-                            <div class="form-text">Orden de visualizaciÃ³n (menor = primero)</div>
+                            <div class="form-text">Orden de visualización (menor = primero)</div>
                         </div>
 
                         <!-- Campos adicionales -->
@@ -147,21 +147,21 @@ require_once __DIR__ . '/../layouts/navbar.php';
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-info-circle text-primary"></i> InformaciÃ³n</h5>
+                    <h5 class="card-title"><i class="bi bi-info-circle text-primary"></i> Información</h5>
                     
-                    <h6 class="mt-3">CatÃ¡logo Padre</h6>
+                    <h6 class="mt-3">Catálogo Padre</h6>
                     <p class="small text-muted">
-                        Es la categorÃ­a principal. Por ejemplo: "DenominaciÃ³n", "Tipos de Pago", etc.
+                        Es la categorí­a principal. Por ejemplo: "Denominación", "Tipos de Pago", etc.
                     </p>
 
                     <h6 class="mt-3">Registro Hijo</h6>
                     <p class="small text-muted">
-                        Pertenece a un catÃ¡logo padre. Por ejemplo: "S.A.C." es hijo de "DenominaciÃ³n".
+                        Pertenece a un catálogo padre. Por ejemplo: "S.A.C." es hijo de "Denominación".
                     </p>
 
                     <h6 class="mt-3">Campos Adicionales</h6>
                     <p class="small text-muted mb-0">
-                        Campos flexibles para almacenar informaciÃ³n extra segÃºn el tipo de catÃ¡logo.
+                        Campos flexibles para almacenar información extra segíºn el tipo de catálogo.
                     </p>
                 </div>
             </div>
