@@ -1,14 +1,9 @@
 <?php
-/**
- * StockController
- * Maneja visualización y gestión de stock
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/../models/StockSucursal.php';
 require_once __DIR__ . '/../models/Sucursal.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class StockController {
     
@@ -16,6 +11,7 @@ class StockController {
      * Ver stock general o por sucursal
      */
     public function index() {
+        PermisoHelper::requirePermiso('stock/index');
         AuthHelper::requireAuth();
         
         $sucursalModel = new Sucursal();
@@ -37,6 +33,7 @@ class StockController {
      * Ver productos con stock bajo
      */
     public function stockBajo() {
+        PermisoHelper::requirePermiso('stock/index');
         AuthHelper::requireAuth();
         
         $limite = $_GET['limite'] ?? 10;
@@ -77,7 +74,7 @@ class StockController {
      * Vista de transferencias entre sucursales
      */
     public function transferencias() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('stock/transferencias');
         
         $sucursalModel = new Sucursal();
         $sucursales = $sucursalModel->getAllActive();
@@ -132,7 +129,7 @@ class StockController {
      * Procesar transferencia entre sucursales
      */
     public function procesarTransferencia() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('stock/procesarTransferencia');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=stock/transferencias');

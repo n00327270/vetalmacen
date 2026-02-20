@@ -1,14 +1,9 @@
 <?php
-/**
- * CategoriaController
- * Maneja CRUD de categorías
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/../models/Categoria.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
 require_once __DIR__ . '/../../helpers/ValidationHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class CategoriaController {
     
@@ -16,6 +11,7 @@ class CategoriaController {
      * Listar categorías
      */
     public function index() {
+        PermisoHelper::requirePermiso('categorias/index');
         AuthHelper::requireAuth();
         
         $categoriaModel = new Categoria();
@@ -28,7 +24,7 @@ class CategoriaController {
      * Mostrar formulario de creación
      */
     public function crear() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('categorias/crear');
         
         require_once __DIR__ . '/../views/categorias/crear.php';
     }
@@ -37,7 +33,7 @@ class CategoriaController {
      * Guardar categoría
      */
     public function guardar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('categorias/crear');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=categorias');
@@ -79,7 +75,7 @@ class CategoriaController {
      * Mostrar formulario de edición
      */
     public function editar($id) {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('categorias/editar');
         
         $categoriaModel = new Categoria();
         $categoria = $categoriaModel->getById($id);
@@ -97,7 +93,7 @@ class CategoriaController {
      * Actualizar categoría
      */
     public function actualizar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('categorias/editar');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=categorias');
@@ -140,7 +136,7 @@ class CategoriaController {
      * Eliminar categoría
      */
     public function eliminar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('categorias/eliminar');
         
         $categoriaModel = new Categoria();
         $categoriaModel->Id = $id;

@@ -1,10 +1,4 @@
 <?php
-/**
- * OrdenEntradaController
- * Maneja CRUD de órdenes de entrada
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/../models/OrdenEntrada.php';
 require_once __DIR__ . '/../models/DetalleOrdenEntrada.php';
 require_once __DIR__ . '/../models/Proveedor.php';
@@ -13,6 +7,7 @@ require_once __DIR__ . '/../models/Producto.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
 require_once __DIR__ . '/../../helpers/ValidationHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class OrdenEntradaController {
     
@@ -20,6 +15,7 @@ class OrdenEntradaController {
      * Listar órdenes de entrada
      */
     public function index() {
+        PermisoHelper::requirePermiso('ordenes_entrada/index');
         AuthHelper::requireAuth();
         
         $ordenModel = new OrdenEntrada();
@@ -32,7 +28,7 @@ class OrdenEntradaController {
      * Mostrar formulario de creación
      */
     public function crear() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('ordenes_entrada/crear');
         
         $proveedorModel = new Proveedor();
         $sucursalModel = new Sucursal();
@@ -49,7 +45,7 @@ class OrdenEntradaController {
      * Guardar orden de entrada
      */
     public function guardar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('ordenes_entrada/crear');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=ordenes_entrada');
@@ -135,6 +131,7 @@ class OrdenEntradaController {
      * Ver detalle de orden
      */
     public function detalle($id) {
+        PermisoHelper::requirePermiso('ordenes_entrada/detalle');
         AuthHelper::requireAuth();
         
         $ordenModel = new OrdenEntrada();
@@ -156,7 +153,7 @@ class OrdenEntradaController {
      * Cambiar estado de la orden
      */
     public function cambiarEstado() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('ordenes_entrada/editar');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=ordenes_entrada');
@@ -189,7 +186,7 @@ class OrdenEntradaController {
      * Eliminar orden
      */
     public function eliminar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('ordenes_entrada/eliminar');
         
         $ordenModel = new OrdenEntrada();
         $ordenModel->Id = $id;

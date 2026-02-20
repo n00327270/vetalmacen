@@ -3,6 +3,7 @@ require_once __DIR__ . '/../models/Proveedor.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
 require_once __DIR__ . '/../../helpers/ValidationHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class ProveedorController {
     
@@ -10,6 +11,7 @@ class ProveedorController {
      * Listar proveedores
      */
     public function index() {
+        PermisoHelper::requirePermiso('proveedores/index');
         AuthHelper::requireAuth();
         
         $proveedorModel = new Proveedor();
@@ -22,7 +24,7 @@ class ProveedorController {
      * Mostrar formulario de creación
      */
     public function crear() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('proveedores/crear');
         
         $proveedorModel = new Proveedor();
         $denominaciones = $proveedorModel->getDenominaciones();
@@ -34,7 +36,7 @@ class ProveedorController {
      * Guardar proveedor
      */
     public function guardar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('proveedores/crear');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=proveedores');
@@ -104,7 +106,7 @@ class ProveedorController {
      * Mostrar formulario de edición
      */
     public function editar($id) {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('proveedores/editar');
         
         $proveedorModel = new Proveedor();
         $proveedor = $proveedorModel->getById($id);
@@ -124,7 +126,7 @@ class ProveedorController {
      * Actualizar proveedor
      */
     public function actualizar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('proveedores/editar');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=proveedores');
@@ -200,6 +202,7 @@ class ProveedorController {
      * Ver detalle del proveedor
      */
     public function detalle($id) {
+        PermisoHelper::requirePermiso('proveedores/detalle');
         AuthHelper::requireAuth();
         
         $proveedorModel = new Proveedor();
@@ -218,7 +221,7 @@ class ProveedorController {
      * Eliminar proveedor
      */
     public function eliminar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('proveedores/eliminar');
         
         $proveedorModel = new Proveedor();
         $proveedorModel->Id = $id;

@@ -2,6 +2,7 @@
 $pageTitle = 'Sucursales';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -17,7 +18,8 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-building"></i> Sucursales</h2>
         </div>
         <div class="col-auto">
-            <?php if (AuthHelper::isAdmin()): ?>
+            <!-- 🔒 PROTECCIÓN -->
+            <?php if (PermisoHelper::tienePermiso('sucursales/crear')): ?>
             <a href="/vetalmacen/public/index.php?url=sucursales/crear" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nueva Sucursal
             </a>
@@ -107,22 +109,21 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <?php if (AuthHelper::isAdmin()): ?>
+                                        <!-- 🔒 EDITAR -->
+                                        <?php if (PermisoHelper::tienePermiso('sucursales/editar')): ?>
                                         <a href="/vetalmacen/public/index.php?url=sucursales/editar/<?php echo $sucursal['Id']; ?>" 
                                            class="btn btn-outline-warning" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <?php if ($sucursal['Activo']): ?>
+                                        <?php endif; ?>
+                                        
+                                        <!-- 🔒 ELIMINAR -->
+                                        <?php if (PermisoHelper::tienePermiso('sucursales/eliminar') && $sucursal['Activo']): ?>
                                         <button type="button" 
                                                 class="btn btn-outline-danger" 
                                                 onclick="desactivarSucursal(<?php echo $sucursal['Id']; ?>, '<?php echo htmlspecialchars($sucursal['Sede']); ?>')"
                                                 title="Desactivar">
                                             <i class="bi bi-trash"></i>
-                                        </button>
-                                        <?php endif; ?>
-                                        <?php else: ?>
-                                        <button class="btn btn-outline-secondary btn-sm" disabled>
-                                            <i class="bi bi-lock"></i>
                                         </button>
                                         <?php endif; ?>
                                     </div>

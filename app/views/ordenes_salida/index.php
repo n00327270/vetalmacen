@@ -2,6 +2,7 @@
 $pageTitle = 'Órdenes de Salida';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -17,7 +18,8 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-arrow-up-circle"></i> Órdenes de Salida</h2>
         </div>
         <div class="col-auto">
-            <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero', 'Logistica'])): ?>
+            <!-- 🔒 PROTECCIÓN -->
+            <?php if (PermisoHelper::tienePermiso('ordenes_salida/crear')): ?>
             <a href="/vetalmacen/public/index.php?url=ordenes_salida/crear" class="btn btn-info">
                 <i class="bi bi-plus-circle"></i> Nueva Orden de Salida
             </a>
@@ -89,11 +91,16 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 <td class="text-end">S/ <?php echo number_format($orden['Total'], 2); ?></td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
+                                        <!-- 🔒 VER DETALLE -->
+                                        <?php if (PermisoHelper::tienePermiso('ordenes_salida/detalle')): ?>
                                         <a href="/vetalmacen/public/index.php?url=ordenes_salida/detalle/<?php echo $orden['Id']; ?>" 
                                            class="btn btn-outline-info" title="Ver detalle">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <?php if (AuthHelper::isAdmin() && in_array($orden['Estado'], ['Pendiente', 'Cancelado'])): ?>
+                                        <?php endif; ?>
+                                        
+                                        <!-- 🔒 ELIMINAR -->
+                                        <?php if (PermisoHelper::tienePermiso('ordenes_salida/eliminar') && in_array($orden['Estado'], ['Pendiente', 'Cancelado'])): ?>
                                         <button type="button" 
                                                 class="btn btn-outline-danger" 
                                                 onclick="eliminarOrden(<?php echo $orden['Id']; ?>)"

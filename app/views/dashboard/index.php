@@ -2,6 +2,7 @@
 $pageTitle = 'Dashboard';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ YA ESTÁ
 ?>
 
 <div class="container-fluid py-4">
@@ -129,11 +130,14 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 </tbody>
                             </table>
                         </div>
+                        <!-- 🔒 LINK A STOCK -->
+                        <?php if (PermisoHelper::tienePermiso('stock/index')): ?>
                         <div class="text-center mt-3">
                             <a href="/vetalmacen/public/index.php?url=stock" class="btn btn-sm btn-outline-primary">
                                 Ver todo el stock <i class="bi bi-arrow-right"></i>
                             </a>
                         </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -182,9 +186,14 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                             <?php foreach ($ordenesEntradaRecientes as $orden): ?>
                                             <tr>
                                                 <td>
-                                                    <a href="/vetalmacen/public/index.php?url=ordenes_entrada/detalle/<?php echo $orden['Id']; ?>">
+                                                    <!-- 🔒 LINK A DETALLE ORDEN ENTRADA -->
+                                                    <?php if (PermisoHelper::tienePermiso('ordenes_entrada/detalle')): ?>
+                                                        <a href="/vetalmacen/public/index.php?url=ordenes_entrada/detalle/<?php echo $orden['Id']; ?>">
+                                                            #<?php echo $orden['Id']; ?>
+                                                        </a>
+                                                    <?php else: ?>
                                                         #<?php echo $orden['Id']; ?>
-                                                    </a>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($orden['ProveedorNombre']); ?></td>
                                                 <td><?php echo date('d/m/Y', strtotime($orden['Fecha'])); ?></td>
@@ -228,9 +237,14 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                             <?php foreach ($ordenesSalidaRecientes as $orden): ?>
                                             <tr>
                                                 <td>
-                                                    <a href="/vetalmacen/public/index.php?url=ordenes_salida/detalle/<?php echo $orden['Id']; ?>">
+                                                    <!-- 🔒 LINK A DETALLE ORDEN SALIDA -->
+                                                    <?php if (PermisoHelper::tienePermiso('ordenes_salida/detalle')): ?>
+                                                        <a href="/vetalmacen/public/index.php?url=ordenes_salida/detalle/<?php echo $orden['Id']; ?>">
+                                                            #<?php echo $orden['Id']; ?>
+                                                        </a>
+                                                    <?php else: ?>
                                                         #<?php echo $orden['Id']; ?>
-                                                    </a>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($orden['TipoSalida']); ?></td>
                                                 <td><?php echo date('d/m/Y', strtotime($orden['Fecha'])); ?></td>
@@ -270,30 +284,45 @@ require_once __DIR__ . '/../layouts/navbar.php';
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
+                        <!-- 🔒 NUEVO PRODUCTO -->
+                        <?php if (PermisoHelper::tienePermiso('productos/crear')): ?>
                         <div class="col-md-3">
                             <a href="/vetalmacen/public/index.php?url=productos/crear" class="btn btn-outline-primary w-100 p-3">
                                 <i class="bi bi-plus-circle d-block mb-2" style="font-size: 2rem;"></i>
                                 Nuevo Producto
                             </a>
                         </div>
+                        <?php endif; ?>
+                        
+                        <!-- 🔒 NUEVA ENTRADA -->
+                        <?php if (PermisoHelper::tienePermiso('ordenes_entrada/crear')): ?>
                         <div class="col-md-3">
                             <a href="/vetalmacen/public/index.php?url=ordenes_entrada/crear" class="btn btn-outline-success w-100 p-3">
                                 <i class="bi bi-arrow-down-circle d-block mb-2" style="font-size: 2rem;"></i>
                                 Nueva Entrada
                             </a>
                         </div>
+                        <?php endif; ?>
+                        
+                        <!-- 🔒 NUEVA SALIDA -->
+                        <?php if (PermisoHelper::tienePermiso('ordenes_salida/crear')): ?>
                         <div class="col-md-3">
                             <a href="/vetalmacen/public/index.php?url=ordenes_salida/crear" class="btn btn-outline-info w-100 p-3">
                                 <i class="bi bi-arrow-up-circle d-block mb-2" style="font-size: 2rem;"></i>
                                 Nueva Salida
                             </a>
                         </div>
+                        <?php endif; ?>
+                        
+                        <!-- 🔒 VER REPORTES -->
+                        <?php if (PermisoHelper::tienePermiso('reportes/index')): ?>
                         <div class="col-md-3">
                             <a href="/vetalmacen/public/index.php?url=reportes" class="btn btn-outline-secondary w-100 p-3">
                                 <i class="bi bi-file-earmark-bar-graph d-block mb-2" style="font-size: 2rem;"></i>
                                 Ver Reportes
                             </a>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

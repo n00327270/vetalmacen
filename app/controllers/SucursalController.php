@@ -3,6 +3,7 @@ require_once __DIR__ . '/../models/Sucursal.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
 require_once __DIR__ . '/../../helpers/ValidationHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class SucursalController {
     
@@ -10,6 +11,7 @@ class SucursalController {
      * Listar sucursales
      */
     public function index() {
+        PermisoHelper::requirePermiso('sucursales/index');
         AuthHelper::requireAuth();
         
         $sucursalModel = new Sucursal();
@@ -22,7 +24,7 @@ class SucursalController {
      * Mostrar formulario de creación
      */
     public function crear() {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('sucursales/crear');
         
         require_once __DIR__ . '/../views/sucursales/crear.php';
     }
@@ -31,7 +33,7 @@ class SucursalController {
      * Guardar sucursal
      */
     public function guardar() {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('sucursales/crear');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=sucursales');
@@ -88,7 +90,7 @@ class SucursalController {
      * Mostrar formulario de edición
      */
     public function editar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('sucursales/editar');
         
         $sucursalModel = new Sucursal();
         $sucursal = $sucursalModel->getById($id);
@@ -106,7 +108,7 @@ class SucursalController {
      * Actualizar sucursal
      */
     public function actualizar() {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('sucursales/editar');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=sucursales');
@@ -169,7 +171,7 @@ class SucursalController {
      * Eliminar sucursal (soft delete)
      */
     public function eliminar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('sucursales/eliminar');
         
         $sucursalModel = new Sucursal();
         $sucursalModel->Id = $id;

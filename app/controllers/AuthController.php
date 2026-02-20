@@ -1,10 +1,4 @@
 <?php
-/**
- * AuthController
- * Maneja autenticación y login con Google reCAPTCHA
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';

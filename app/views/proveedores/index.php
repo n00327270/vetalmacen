@@ -2,6 +2,7 @@
 $pageTitle = 'Proveedores';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -17,7 +18,8 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-truck"></i> Proveedores</h2>
         </div>
         <div class="col-auto">
-            <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero'])): ?>
+            <!-- 🔒 PROTECCIÓN -->
+            <?php if (PermisoHelper::tienePermiso('proveedores/crear')): ?>
             <a href="/vetalmacen/public/index.php?url=proveedores/crear" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nuevo Proveedor
             </a>
@@ -70,17 +72,24 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 <td><?php echo htmlspecialchars($proveedor['Email']); ?></td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
+                                        <!-- 🔒 VER DETALLE -->
+                                        <?php if (PermisoHelper::tienePermiso('proveedores/detalle')): ?>
                                         <a href="/vetalmacen/public/index.php?url=proveedores/detalle/<?php echo $proveedor['Id']; ?>" 
                                            class="btn btn-outline-info" title="Ver detalle">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero'])): ?>
+                                        <?php endif; ?>
+                                        
+                                        <!-- 🔒 EDITAR -->
+                                        <?php if (PermisoHelper::tienePermiso('proveedores/editar')): ?>
                                         <a href="/vetalmacen/public/index.php?url=proveedores/editar/<?php echo $proveedor['Id']; ?>" 
                                            class="btn btn-outline-warning" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <?php endif; ?>
-                                        <?php if (AuthHelper::isAdmin()): ?>
+                                        
+                                        <!-- 🔒 ELIMINAR -->
+                                        <?php if (PermisoHelper::tienePermiso('proveedores/eliminar')): ?>
                                         <button type="button" 
                                                 class="btn btn-outline-danger" 
                                                 onclick="eliminarProveedor(<?php echo $proveedor['Id']; ?>, '<?php echo htmlspecialchars($proveedor['RazonSocial']); ?>')"

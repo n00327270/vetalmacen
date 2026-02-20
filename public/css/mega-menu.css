@@ -1,0 +1,141 @@
+/**
+ * Mega Menu Styles
+ * Sistema de permisos VetAlmacén
+ */
+
+/* Mega Menu Container */
+.mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 600px;
+    padding: 25px;
+    background: #ffffff;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: none;
+}
+
+/* Mostrar mega menu al hacer hover */
+.nav-item.mega-dropdown:hover .mega-menu {
+    display: block;
+}
+
+/* Grid de módulos */
+.mega-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Tarjeta de módulo individual */
+.mega-menu-module {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.mega-menu-module:hover {
+    background: #e9ecef;
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+}
+
+/* Icono del módulo */
+.mega-menu-module-icon {
+    font-size: 2.5rem;
+    color: #0d6efd;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Título del módulo */
+.mega-menu-module-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Descripción del módulo */
+.mega-menu-module-description {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 12px;
+    display: block;
+}
+
+/* Separador */
+.mega-menu-module hr {
+    margin: 10px 0;
+    opacity: 0.2;
+}
+
+/* Lista de acciones (Nivel 3) */
+.mega-menu-actions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mega-menu-actions li {
+    margin-bottom: 5px;
+}
+
+.mega-menu-actions a {
+    color: #495057;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.mega-menu-actions a:hover {
+    background: #dee2e6;
+    color: #0d6efd;
+    padding-left: 12px;
+}
+
+.mega-menu-actions a i {
+    margin-right: 6px;
+    font-size: 0.8rem;
+}
+
+/* Sección simple (sin mega menu) */
+.nav-item.simple-link .nav-link {
+    padding: 0.5rem 1rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .mega-menu {
+        width: 100%;
+        position: relative;
+        top: 0;
+        margin-top: 10px;
+    }
+    
+    .mega-menu-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Badge de módulo */
+.mega-menu-module-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #0d6efd;
+    color: white;
+    margin-left: 8px;
+}

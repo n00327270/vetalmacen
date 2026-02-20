@@ -8,6 +8,7 @@ require_once __DIR__ . '/../models/Producto.php';
 require_once __DIR__ . '/../models/Sucursal.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class ReporteController {
     
@@ -15,6 +16,7 @@ class ReporteController {
      * Vista principal de reportes (dashboard de reportes)
      */
     public function index() {
+        PermisoHelper::requirePermiso('reportes/index');
         AuthHelper::requireAuth();
         require_once __DIR__ . '/../views/reportes/index.php';
     }
@@ -27,6 +29,7 @@ class ReporteController {
      * Reporte de movimientos (entradas y salidas)
      */
     public function movimientos() {
+        PermisoHelper::requirePermiso('reportes/movimientos');
         AuthHelper::requireAuth();
         
         // Obtener parámetros de filtro
@@ -186,6 +189,7 @@ class ReporteController {
      * Reporte de stock por sucursal
      */
     public function stock() {
+        PermisoHelper::requirePermiso('reportes/stock');
         AuthHelper::requireAuth();
         
         // Obtener parámetros de filtro
@@ -309,6 +313,7 @@ class ReporteController {
      * Reporte de inventario valorizado
      */
     public function inventarioValorizado() {
+        PermisoHelper::requirePermiso('reportes/inventarioValorizado');
         AuthHelper::requireAuth();
         
         $sucursalId = $_GET['sucursal_id'] ?? '';
@@ -368,6 +373,7 @@ class ReporteController {
      * Dashboard de estadísticas
      */
     public function estadisticas() {
+        PermisoHelper::requirePermiso('reportes/estadisticas');
         AuthHelper::requireAuth();
         
         $database = new Database();
@@ -446,6 +452,7 @@ class ReporteController {
      * Requiere: composer require phpoffice/phpspreadsheet
      */
     public function exportarStockExcel() {
+        PermisoHelper::requirePermiso('reportes/exportarStockExcel');
         AuthHelper::requireAuth();
         
         // Verificar si PhpSpreadsheet está instalado
@@ -563,6 +570,7 @@ class ReporteController {
      * Exportar reporte de movimientos a Excel
      */
     public function exportarMovimientosExcel() {
+        PermisoHelper::requirePermiso('reportes/exportarMovimientosExcel');
         AuthHelper::requireAuth();
         
         if (!class_exists('\PhpOffice\PhpSpreadsheet\Spreadsheet')) {

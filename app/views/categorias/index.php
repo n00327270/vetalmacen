@@ -2,6 +2,7 @@
 $pageTitle = 'Categorías';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -17,7 +18,8 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-tags"></i> Categorías</h2>
         </div>
         <div class="col-auto">
-            <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero'])): ?>
+            <!-- 🔒 PROTECCIÓN -->
+            <?php if (PermisoHelper::tienePermiso('categorias/crear')): ?>
             <a href="/vetalmacen/public/index.php?url=categorias/crear" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nueva Categoría
             </a>
@@ -49,13 +51,16 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 <?php echo $categoria['SubcategoriaCount']; ?> subcategorías
                             </span>
                             <div class="btn-group btn-group-sm">
-                                <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero'])): ?>
+                                <!-- 🔒 PROTECCIÓN EDITAR -->
+                                <?php if (PermisoHelper::tienePermiso('categorias/editar')): ?>
                                 <a href="/vetalmacen/public/index.php?url=categorias/editar/<?php echo $categoria['Id']; ?>" 
                                    class="btn btn-outline-warning">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <?php endif; ?>
-                                <?php if (AuthHelper::isAdmin()): ?>
+                                
+                                <!-- 🔒 PROTECCIÓN ELIMINAR -->
+                                <?php if (PermisoHelper::tienePermiso('categorias/eliminar')): ?>
                                 <button type="button" 
                                         class="btn btn-outline-danger" 
                                         onclick="eliminarCategoria(<?php echo $categoria['Id']; ?>, '<?php echo htmlspecialchars($categoria['Nombre']); ?>')">

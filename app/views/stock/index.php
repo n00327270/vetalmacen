@@ -2,6 +2,7 @@
 $pageTitle = 'Stock por Sucursal';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -17,14 +18,19 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-boxes"></i> Stock por Sucursal</h2>
         </div>
         <div class="col-auto">
-            <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero'])): ?>
+            <!-- 🔒 TRANSFERENCIAS -->
+            <?php if (PermisoHelper::tienePermiso('stock/transferencias')): ?>
             <a href="/vetalmacen/public/index.php?url=stock/transferencias" class="btn btn-warning me-2">
                 <i class="bi bi-arrow-left-right"></i> Transferencias
             </a>
             <?php endif; ?>
+            
+            <!-- 🔒 REPORTE -->
+            <?php if (PermisoHelper::tienePermiso('reportes/stock')): ?>
             <a href="/vetalmacen/public/index.php?url=reportes/stock" class="btn btn-info">
                 <i class="bi bi-file-earmark-text"></i> Ver Reporte
             </a>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -102,9 +108,14 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 </td>
                                 <td><?php echo htmlspecialchars($item['Codigo']); ?></td>
                                 <td>
+                                    <!-- 🔒 LINK A DETALLE -->
+                                    <?php if (PermisoHelper::tienePermiso('productos/detalle')): ?>
                                     <a href="/vetalmacen/public/index.php?url=productos/detalle/<?php echo $item['ProductoId']; ?>">
                                         <strong><?php echo htmlspecialchars($item['ProductoNombre']); ?></strong>
                                     </a>
+                                    <?php else: ?>
+                                        <strong><?php echo htmlspecialchars($item['ProductoNombre']); ?></strong>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($item['Marca']); ?></td>
                                 <td><?php echo htmlspecialchars($item['CategoriaNombre']); ?></td>

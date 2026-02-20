@@ -1,16 +1,11 @@
 <?php
-/**
- * DashboardController
- * Panel principal del sistema
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/../models/Producto.php';
 require_once __DIR__ . '/../models/OrdenEntrada.php';
 require_once __DIR__ . '/../models/OrdenSalida.php';
 require_once __DIR__ . '/../models/StockSucursal.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class DashboardController {
     
@@ -18,6 +13,7 @@ class DashboardController {
      * Página principal del dashboard
      */
     public function index() {
+        PermisoHelper::requirePermiso('dashboard/index');
         AuthHelper::requireAuth();
         
         $user = SessionHelper::getUser();

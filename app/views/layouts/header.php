@@ -13,6 +13,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/vetalmacen/public/css/styles.css">
+    <link rel="stylesheet" href="/vetalmacen/public/css/mega-menu.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/vetalmacen/public/images/logo.png">

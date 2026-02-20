@@ -1,9 +1,4 @@
 <?php
-/**
- * Helper para autenticación y autorización
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/SessionHelper.php';
 
 class AuthHelper {
@@ -37,6 +32,11 @@ class AuthHelper {
         $user = SessionHelper::getUser();
         if (!$user) {
             return false;
+        }
+        
+        // ⭐ NUEVO: SuperUsuario tiene todos los roles
+        if (isset($user['es_super']) && $user['es_super'] == 1) {
+            return true;
         }
         
         foreach ($roles as $role) {
@@ -77,6 +77,13 @@ class AuthHelper {
      * Verificar si el usuario es administrador
      */
     public static function isAdmin() {
+        $user = SessionHelper::getUser();
+        
+        // ⭐ NUEVO: SuperUsuario cuenta como admin
+        if (isset($user['es_super']) && $user['es_super'] == 1) {
+            return true;
+        }
+        
         return self::hasRole('Administrador');
     }
 
@@ -99,6 +106,27 @@ class AuthHelper {
      */
     public static function redirectIfAuthenticated() {
         if (SessionHelper::isAuthenticated()) {
+            header('Location: /vetalmacen/public/index.php?url=dashboard');
+            exit();
+        }
+    }
+
+    /**
+     * ⭐ NUEVO: Verificar si el usuario es SuperUsuario
+     */
+    public static function esSuperUsuario() {
+        $user = SessionHelper::getUser();
+        return isset($user['es_super']) && $user['es_super'] == 1;
+    }
+
+    /**
+     * ⭐ NUEVO: Requerir que el usuario sea SuperUsuario
+     */
+    public static function requireSuperUsuario() {
+        self::requireAuth();
+        
+        if (!self::esSuperUsuario()) {
+            SessionHelper::setFlash('danger', 'Esta acción solo está disponible para el SuperUsuario');
             header('Location: /vetalmacen/public/index.php?url=dashboard');
             exit();
         }

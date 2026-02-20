@@ -2,6 +2,7 @@
 $pageTitle = 'Reporte de Stock';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -18,10 +19,13 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-boxes"></i> Reporte de Stock</h2>
         </div>
         <div class="col-auto">
+            <!-- 🔒 PROTECCIÓN EXPORTAR EXCEL -->
+            <?php if (PermisoHelper::tienePermiso('reportes/exportarStockExcel')): ?>
             <a href="/vetalmacen/public/index.php?url=reportes/exportarStockExcel<?php echo !empty($_GET) ? '&' . http_build_query($_GET) : ''; ?>" 
                class="btn btn-success" target="_blank">
                 <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
             </a>
+            <?php endif; ?>
         </div>
     </div>
 

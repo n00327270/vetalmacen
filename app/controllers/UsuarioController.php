@@ -1,16 +1,11 @@
 <?php
-/**
- * UsuarioController
- * Maneja CRUD de usuarios
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../models/Rol.php';
 require_once __DIR__ . '/../models/Sucursal.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
 require_once __DIR__ . '/../../helpers/ValidationHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class UsuarioController {
     
@@ -18,7 +13,8 @@ class UsuarioController {
      * Listar usuarios
      */
     public function index() {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('usuarios/index');
+        AuthHelper::requireAuth();
         
         $usuarioModel = new Usuario();
         $usuarios = $usuarioModel->getAll();
@@ -30,7 +26,7 @@ class UsuarioController {
      * Mostrar formulario de creación
      */
     public function crear() {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('usuarios/crear');
         
         $rolModel = new Rol();
         $sucursalModel = new Sucursal();
@@ -45,7 +41,7 @@ class UsuarioController {
      * Guardar usuario
      */
     public function guardar() {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('usuarios/crear');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=usuarios');
@@ -116,7 +112,7 @@ class UsuarioController {
      * Mostrar formulario de edición
      */
     public function editar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('usuarios/editar');
         
         $usuarioModel = new Usuario();
         $usuario = $usuarioModel->getById($id);
@@ -140,7 +136,7 @@ class UsuarioController {
      * Actualizar usuario
      */
     public function actualizar() {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('usuarios/editar');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=usuarios');
@@ -215,7 +211,7 @@ class UsuarioController {
      * Eliminar usuario
      */
     public function eliminar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('usuarios/eliminar');
         
         // No permitir eliminar el usuario actual
         $currentUser = SessionHelper::getUser();

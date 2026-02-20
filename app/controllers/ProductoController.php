@@ -6,6 +6,7 @@ require_once __DIR__ . '/../models/StockSucursal.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
 require_once __DIR__ . '/../../helpers/ValidationHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class ProductoController {
     
@@ -13,6 +14,7 @@ class ProductoController {
      * Listar todos los productos
      */
     public function index() {
+        PermisoHelper::requirePermiso('productos/index');
         AuthHelper::requireAuth();
         
         $productoModel = new Producto();
@@ -25,7 +27,7 @@ class ProductoController {
      * Mostrar formulario de creación
      */
     public function crear() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('productos/crear');
         
         $categoriaModel = new Categoria();
         $subcategoriaModel = new Subcategoria();
@@ -40,7 +42,7 @@ class ProductoController {
      * Guardar nuevo producto
      */
     public function guardar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('productos/crear');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=productos');
@@ -129,7 +131,7 @@ class ProductoController {
      * Mostrar formulario de edición
      */
     public function editar($id) {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('productos/editar');
         
         $productoModel = new Producto();
         $producto = $productoModel->getById($id);
@@ -153,7 +155,7 @@ class ProductoController {
      * Actualizar producto
      */
     public function actualizar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('productos/editar');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=productos');
@@ -243,6 +245,7 @@ class ProductoController {
      * Ver detalle del producto
      */
     public function detalle($id) {
+        PermisoHelper::requirePermiso('productos/detalle');
         AuthHelper::requireAuth();
         
         $productoModel = new Producto();
@@ -272,7 +275,7 @@ class ProductoController {
      * Eliminar producto
      */
     public function eliminar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('productos/eliminar');
         
         $productoModel = new Producto();
         $productoModel->Id = $id;

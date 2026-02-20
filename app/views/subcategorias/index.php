@@ -2,6 +2,7 @@
 $pageTitle = 'Subcategorías';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -17,7 +18,8 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-bookmarks"></i> Subcategorías</h2>
         </div>
         <div class="col-auto">
-            <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero'])): ?>
+            <!-- 🔒 PROTECCIÓN -->
+            <?php if (PermisoHelper::tienePermiso('subcategorias/crear')): ?>
             <a href="/vetalmacen/public/index.php?url=subcategorias/crear" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nueva Subcategoría
             </a>
@@ -73,13 +75,16 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <?php if (AuthHelper::hasAnyRole(['Administrador', 'Almacenero'])): ?>
+                                        <!-- 🔒 EDITAR -->
+                                        <?php if (PermisoHelper::tienePermiso('subcategorias/editar')): ?>
                                         <a href="/vetalmacen/public/index.php?url=subcategorias/editar/<?php echo $subcategoria['Id']; ?>" 
                                            class="btn btn-outline-warning" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <?php endif; ?>
-                                        <?php if (AuthHelper::isAdmin()): ?>
+                                        
+                                        <!-- 🔒 ELIMINAR -->
+                                        <?php if (PermisoHelper::tienePermiso('subcategorias/eliminar')): ?>
                                         <button type="button" 
                                                 class="btn btn-outline-danger" 
                                                 onclick="eliminarSubcategoria(<?php echo $subcategoria['Id']; ?>, '<?php echo htmlspecialchars($subcategoria['Nombre']); ?>')"

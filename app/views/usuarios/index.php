@@ -2,6 +2,7 @@
 $pageTitle = 'Usuarios';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
 ?>
 
 <div class="container-fluid py-4">
@@ -17,9 +18,12 @@ require_once __DIR__ . '/../layouts/navbar.php';
             <h2><i class="bi bi-people"></i> Usuarios del Sistema</h2>
         </div>
         <div class="col-auto">
+            <!-- 🔒 PROTECCIÓN -->
+            <?php if (PermisoHelper::tienePermiso('usuarios/crear')): ?>
             <a href="/vetalmacen/public/index.php?url=usuarios/crear" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nuevo Usuario
             </a>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -56,11 +60,16 @@ require_once __DIR__ . '/../layouts/navbar.php';
                                 <td><?php echo date('d/m/Y', strtotime($usuario['CreatedAt'])); ?></td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
+                                        <!-- 🔒 EDITAR -->
+                                        <?php if (PermisoHelper::tienePermiso('usuarios/editar')): ?>
                                         <a href="/vetalmacen/public/index.php?url=usuarios/editar/<?php echo $usuario['Id']; ?>" 
                                            class="btn btn-outline-warning">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <?php if ($usuario['Id'] != SessionHelper::getUser()['id']): ?>
+                                        <?php endif; ?>
+                                        
+                                        <!-- 🔒 ELIMINAR (no puede eliminarse a sí mismo) -->
+                                        <?php if (PermisoHelper::tienePermiso('usuarios/eliminar') && $usuario['Id'] != SessionHelper::getUser()['id']): ?>
                                         <button type="button" 
                                                 class="btn btn-outline-danger" 
                                                 onclick="eliminarUsuario(<?php echo $usuario['Id']; ?>, '<?php echo htmlspecialchars($usuario['Username']); ?>')">

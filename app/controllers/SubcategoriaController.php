@@ -1,15 +1,10 @@
 <?php
-/**
- * SubcategoriaController
- * Maneja CRUD de subcategorías
- * Fecha: 2026-01-23
- */
-
 require_once __DIR__ . '/../models/Subcategoria.php';
 require_once __DIR__ . '/../models/Categoria.php';
 require_once __DIR__ . '/../../helpers/SessionHelper.php';
 require_once __DIR__ . '/../../helpers/AuthHelper.php';
 require_once __DIR__ . '/../../helpers/ValidationHelper.php';
+require_once __DIR__ . '/../../helpers/PermisoHelper.php';
 
 class SubcategoriaController {
     
@@ -17,6 +12,7 @@ class SubcategoriaController {
      * Listar subcategorías
      */
     public function index() {
+        PermisoHelper::requirePermiso('subcategorias/index');
         AuthHelper::requireAuth();
         
         $subcategoriaModel = new Subcategoria();
@@ -29,7 +25,7 @@ class SubcategoriaController {
      * Mostrar formulario de creación
      */
     public function crear() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('subcategorias/crear');
         
         $categoriaModel = new Categoria();
         $categorias = $categoriaModel->getAll();
@@ -41,7 +37,7 @@ class SubcategoriaController {
      * Guardar subcategoría
      */
     public function guardar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('subcategorias/crear');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=subcategorias');
@@ -88,7 +84,7 @@ class SubcategoriaController {
      * Mostrar formulario de edición
      */
     public function editar($id) {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('subcategorias/editar');
         
         $subcategoriaModel = new Subcategoria();
         $subcategoria = $subcategoriaModel->getById($id);
@@ -109,7 +105,7 @@ class SubcategoriaController {
      * Actualizar subcategoría
      */
     public function actualizar() {
-        AuthHelper::requireAnyRole(['Administrador', 'Almacenero']);
+        PermisoHelper::requirePermiso('subcategorias/editar');
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /vetalmacen/public/index.php?url=subcategorias');
@@ -162,7 +158,7 @@ class SubcategoriaController {
      * Eliminar subcategoría
      */
     public function eliminar($id) {
-        AuthHelper::requireRole('Administrador');
+        PermisoHelper::requirePermiso('subcategorias/eliminar');
         
         $subcategoriaModel = new Subcategoria();
         $subcategoriaModel->Id = $id;
