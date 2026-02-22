@@ -2,7 +2,7 @@
 $pageTitle = 'MasterTable - Catálogos del Sistema';
 require_once __DIR__ . '/../layouts/header.php';
 require_once __DIR__ . '/../layouts/navbar.php';
-require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
+require_once __DIR__ . '/../../../helpers/PermisoHelper.php';
 ?>
 
 <div class="container-fluid py-4">
@@ -57,7 +57,7 @@ require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
                         <!-- 🔒 EDITAR PADRE -->
                         <?php if (PermisoHelper::tienePermiso('mastertable/editar')): ?>
                         <a href="/vetalmacen/public/index.php?url=mastertable/editar/<?php echo $padre['IdMasterTable']; ?>" 
-                        class="btn btn-sm btn-light" title="Editar padre">
+                           class="btn btn-sm btn-light" title="Editar padre">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <?php endif; ?>
@@ -65,10 +65,20 @@ require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
                         <!-- 🔒 TOGGLE ESTADO -->
                         <?php if (PermisoHelper::tienePermiso('mastertable/toggleEstado')): ?>
                         <a href="/vetalmacen/public/index.php?url=mastertable/toggleEstado/<?php echo $padre['IdMasterTable']; ?>" 
-                        class="btn btn-sm btn-light" 
-                        onclick="return confirm('¿Cambiar estado de este catálogo?')"
-                        title="Activar/Desactivar">
+                           class="btn btn-sm btn-light" 
+                           onclick="return confirm('¿Cambiar estado de este catálogo?')"
+                           title="Activar/Desactivar">
                             <i class="bi bi-toggle-<?php echo $padre['States'] == 1 ? 'on' : 'off'; ?>"></i>
+                        </a>
+                        <?php endif; ?>
+                        
+                        <!-- 🔒 ELIMINAR PADRE (con CASCADE) -->
+                        <?php if (PermisoHelper::tienePermiso('mastertable/eliminar')): ?>
+                        <a href="/vetalmacen/public/index.php?url=mastertable/eliminar/<?php echo $padre['IdMasterTable']; ?>" 
+                           class="btn btn-sm btn-danger" 
+                           onclick="return confirm('⚠️ ADVERTENCIA: Se eliminará este catálogo Y sus <?php echo count($padre['hijos']); ?> hijos.\n\nEsta acción es IRREVERSIBLE.\n\n¿Continuar?')"
+                           title="Eliminar catálogo con todos sus hijos">
+                            <i class="bi bi-trash"></i>
                         </a>
                         <?php endif; ?>
                         
@@ -128,7 +138,7 @@ require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
                                             <!-- 🔒 EDITAR HIJO -->
                                             <?php if (PermisoHelper::tienePermiso('mastertable/editar')): ?>
                                             <a href="/vetalmacen/public/index.php?url=mastertable/editar/<?php echo $hijo['IdMasterTable']; ?>" 
-                                            class="btn btn-sm btn-warning" title="Editar">
+                                               class="btn btn-sm btn-warning" title="Editar">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <?php endif; ?>
@@ -136,9 +146,9 @@ require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
                                             <!-- 🔒 TOGGLE ESTADO HIJO -->
                                             <?php if (PermisoHelper::tienePermiso('mastertable/toggleEstado')): ?>
                                             <a href="/vetalmacen/public/index.php?url=mastertable/toggleEstado/<?php echo $hijo['IdMasterTable']; ?>" 
-                                            class="btn btn-sm btn-<?php echo $hijo['States'] == 1 ? 'secondary' : 'success'; ?>" 
-                                            onclick="return confirm('¿Cambiar estado?')"
-                                            title="<?php echo $hijo['States'] == 1 ? 'Desactivar' : 'Activar'; ?>">
+                                               class="btn btn-sm btn-<?php echo $hijo['States'] == 1 ? 'secondary' : 'success'; ?>" 
+                                               onclick="return confirm('¿Cambiar estado?')"
+                                               title="<?php echo $hijo['States'] == 1 ? 'Desactivar' : 'Activar'; ?>">
                                                 <i class="bi bi-toggle-<?php echo $hijo['States'] == 1 ? 'on' : 'off'; ?>"></i>
                                             </a>
                                             <?php endif; ?>
@@ -146,9 +156,9 @@ require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
                                             <!-- 🔒 ELIMINAR HIJO -->
                                             <?php if (PermisoHelper::tienePermiso('mastertable/eliminar')): ?>
                                             <a href="/vetalmacen/public/index.php?url=mastertable/eliminar/<?php echo $hijo['IdMasterTable']; ?>" 
-                                            class="btn btn-sm btn-danger" 
-                                            onclick="return confirm('¿Está seguro de eliminar este registro?')"
-                                            title="Eliminar">
+                                               class="btn btn-sm btn-danger" 
+                                               onclick="return confirm('¿Está seguro de eliminar este registro?')"
+                                               title="Eliminar">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -164,7 +174,7 @@ require_once __DIR__ . '/../../../helpers/PermisoHelper.php';  // ⭐ AGREGAR
                     <?php if (PermisoHelper::tienePermiso('mastertable/crear')): ?>
                     <div class="text-center mt-3">
                         <a href="/vetalmacen/public/index.php?url=mastertable/crear&parent_id=<?php echo $padre['IdMasterTable']; ?>" 
-                        class="btn btn-sm btn-outline-primary">
+                           class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-plus-circle"></i> Agregar hijo a "<?php echo htmlspecialchars($padre['Name']); ?>"
                         </a>
                     </div>

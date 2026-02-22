@@ -155,7 +155,7 @@ class MasterTableController {
     }
     
     /**
-     * Eliminar registro (soft delete)
+     * Eliminar registro (DELETE físico con CASCADE)
      */
     public function eliminar($id) {
         PermisoHelper::requirePermiso('mastertable/eliminar');
@@ -169,13 +169,6 @@ class MasterTableController {
             exit();
         }
         
-        // Validar si tiene hijos activos
-        if ($masterTableModel->tieneHijosActivos($id)) {
-            SessionHelper::setFlash('danger', 'No se puede eliminar. Tiene registros hijos activos');
-            header('Location: /vetalmacen/public/index.php?url=mastertable');
-            exit();
-        }
-        
         // Validar si está en uso
         if ($masterTableModel->estaEnUso($id)) {
             SessionHelper::setFlash('danger', 'No se puede eliminar. Está siendo utilizado en otros registros');
@@ -183,10 +176,8 @@ class MasterTableController {
             exit();
         }
         
-        // Eliminar (soft delete)
-        $user = SessionHelper::getUser();
+        // Eliminar (DELETE físico - CASCADE elimina hijos automáticamente)
         $masterTableModel->IdMasterTable = $id;
-        $masterTableModel->UserEdit = $user['username'];
         
         if ($masterTableModel->delete()) {
             SessionHelper::setFlash('success', 'Registro eliminado exitosamente');

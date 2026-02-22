@@ -28,11 +28,13 @@ class MasterTable {
     /**
      * Obtener todos los padres (registros sin parent)
      * ORDENADOS POR ID (100, 200, 300...)
+     * ⭐ SOLO ACTIVOS (States = 1)
      */
     public function getAllPadres() {
         $query = "SELECT * FROM " . $this->table . " 
                   WHERE IdMasterTableParent IS NULL 
-                  ORDER BY IdMasterTable ASC";  // ← CAMBIO: Orden por ID
+                  AND States = 1
+                  ORDER BY IdMasterTable ASC";
         
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -41,10 +43,12 @@ class MasterTable {
 
     /**
      * Obtener hijos de un padre específico
+     * ⭐ SOLO ACTIVOS (States = 1)
      */
     public function getHijosByPadreId($padreId) {
         $query = "SELECT * FROM " . $this->table . " 
                   WHERE IdMasterTableParent = :padre_id 
+                  AND States = 1
                   ORDER BY `Order` ASC, Name ASC";
         
         $stmt = $this->conn->prepare($query);
@@ -71,6 +75,7 @@ class MasterTable {
 
     /**
      * Obtener árbol completo (padres con sus hijos)
+     * ⭐ SOLO ACTIVOS
      */
     public function getArbolCompleto() {
         $padres = $this->getAllPadres();
@@ -230,17 +235,13 @@ class MasterTable {
     }
 
     /**
-     * Eliminar registro (soft delete - cambiar estado)
+     * Eliminar registro (DELETE físico)
      */
     public function delete() {
-        $query = "UPDATE " . $this->table . " 
-                  SET States = 0,
-                      UserEdit = :user_edit,
-                      DateEdit = NOW()
+        $query = "DELETE FROM " . $this->table . " 
                   WHERE IdMasterTable = :id";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_edit', $this->UserEdit);
         $stmt->bindParam(':id', $this->IdMasterTable);
         
         return $stmt->execute();
